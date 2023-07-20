@@ -436,7 +436,7 @@ class MctsNode:
 
         keep_mols = [mol for mol in self.state.mols if mol is not reaction.mol]
         new_states = [
-            MctsState(keep_mols + list(reactants), self._config)
+            MctsState(keep_mols + list(reactants), self._config, cofactors=self.state.cofactors+reaction.cofactors)
             for reactants in reaction.reactants
         ]
         new_nodes = self._create_children_nodes(new_states, child_idx)

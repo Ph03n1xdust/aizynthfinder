@@ -40,7 +40,7 @@ class MctsState:
     :param config: settings of the tree search algorithm
     """
 
-    def __init__(self, mols: Sequence[TreeMolecule], config: Configuration) -> None:
+    def __init__(self, mols: Sequence[TreeMolecule], config: Configuration, cofactors: np.ndarray = np.zeros(1)) -> None:
         self.mols = mols
         self.stock = config.stock
         self.in_stock_list = [mol in self.stock for mol in self.mols]
@@ -58,6 +58,7 @@ class MctsState:
         inchis = [mol.inchi_key for mol in self.mols]
         inchis.sort()
         self._hash = hash(tuple(inchis))
+        self.cofactors = cofactors
 
     def __hash__(self) -> int:
         return self._hash

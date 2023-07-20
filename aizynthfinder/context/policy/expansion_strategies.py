@@ -104,6 +104,42 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
                 f"The number of templates ({len(self.templates)}) does not agree with the "  # type: ignore
                 f"output dimensions of the model ({self.model.output_size})"
             )
+            
+        #Add parsing of cofactors to numpy arrays (as strings...)
+        if "cofactors" in self.templates.columns:
+            all_cofactors = set()
+            for _, row in self.templates.iterrows():
+                cofactors = row["cofactors"]
+                if cofactors =="0":
+                    continue
+                cofactors=cofactors.split(',')
+                for cofactor in cofactors:
+                    cofactor_name = cofactor[1:]
+                    all_cofactors.add(cofactor_name)
+                    
+            all_cofactors = list(all_cofactors)
+            n_cofactors = len(all_cofactors)
+            for ind in self.templates.index:
+                row = self.templates.iloc[ind]
+                result = np.zeros(n_cofactors,dtype=int)
+                cofactors = row["cofactors"]
+                if cofactors =="0":
+                    self.templates.at[ind,"cofactors"]=np.array2string(result)[1:-1]
+                    continue
+                cofactors=cofactors.split(',')
+                for cofactor in cofactors:
+                    cofactor_sign = cofactor[0]
+                    cofactor_name = cofactor[1:]
+                    cofactor_ind = all_cofactors.index(cofactor_name)
+                    if cofactor_sign=="+":
+                        result[cofactor_ind]+=1
+                    elif cofactor_sign=="-":
+                        result[cofactor_ind]-=1
+                    else:
+                        raise ValueError("Cofactors have to start with +/- sign!")
+                    
+                #Strip away the "[]" since of course fromstring is deprecated and fromiter can not handle it.
+                self.templates.at[ind,"cofactors"]=np.array2string(result)[1:-1]
 
     # pylint: disable=R0914
     def get_actions(
@@ -143,6 +179,7 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
                         smarts=move[self._config.template_column],
                         metadata=metadata,
                         use_rdchiral=self._config.use_rdchiral,
+                        cofactors= np.fromiter(move["cofactors"].split(), dtype=int) if "cofactors" in possible_moves.columns else None
                     )
                 )
         return possible_actions, priors  # type: ignore
