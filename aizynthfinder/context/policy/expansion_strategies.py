@@ -118,7 +118,7 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
                     all_cofactors.add(cofactor_name)
                     
             all_cofactors = list(all_cofactors)
-            n_cofactors = len(all_cofactors)
+            n_cofactors = max(len(all_cofactors),1)
             for ind in self.templates.index:
                 row = self.templates.iloc[ind]
                 result = np.zeros(n_cofactors,dtype=int)
