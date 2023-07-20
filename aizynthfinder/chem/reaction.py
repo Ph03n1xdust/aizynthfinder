@@ -296,7 +296,7 @@ class RetroReaction(abc.ABC, _ReactionInterfaceMixin):
         """
         # pylint: disable=protected-access
         index = index if index is not None else self.index
-        new_reaction = self.__class__(self.mol, index, self.metadata, **self._kwargs)
+        new_reaction = self.__class__(self.mol, index, self.metadata,cofactors = self.cofactors, **self._kwargs)
         new_reaction._reactants = tuple(mol_list for mol_list in self._reactants or [])
         new_reaction._smiles = self._smiles
         return new_reaction
