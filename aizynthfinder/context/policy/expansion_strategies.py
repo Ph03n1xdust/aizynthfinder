@@ -110,7 +110,7 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
             all_cofactors = set()
             for _, row in self.templates.iterrows():
                 cofactors = row["cofactors"]
-                if cofactors =="0":
+                if cofactors =="0" or cofactors =="":
                     continue
                 cofactors=cofactors.split(',')
                 for cofactor in cofactors:
@@ -126,6 +126,7 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
                 if cofactors =="0":
                     self.templates.at[ind,"cofactors"]=np.array2string(result)[1:-1]
                     continue
+                
                 cofactors=cofactors.split(',')
                 for cofactor in cofactors:
                     cofactor_sign = cofactor[0]
@@ -179,7 +180,7 @@ class TemplateBasedExpansionStrategy(ExpansionStrategy):
                         smarts=move[self._config.template_column],
                         metadata=metadata,
                         use_rdchiral=self._config.use_rdchiral,
-                        cofactors= np.fromiter(move["cofactors"].split(), dtype=int) if "cofactors" in possible_moves.columns else None
+                        cofactors= np.fromiter(move["cofactors"].split(), dtype=int) if "cofactors" in possible_moves.columns else np.zeros(1) 
                     )
                 )
         return possible_actions, priors  # type: ignore

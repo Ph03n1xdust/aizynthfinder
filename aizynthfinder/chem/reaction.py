@@ -363,7 +363,7 @@ class TemplatedRetroReaction(RetroReaction):
     _required_kwargs = ["smarts"]
 
     def __init__(
-        self, mol: TreeMolecule, index: int = 0, metadata: StrDict = None, cofactors :np.ndarray = None, **kwargs: Any
+        self, mol: TreeMolecule, index: int = 0, metadata: StrDict = None, cofactors :np.ndarray = np.zeros(1), **kwargs: Any
     ):
         super().__init__(mol, index, metadata, **kwargs)
         self.smarts: str = kwargs["smarts"]
