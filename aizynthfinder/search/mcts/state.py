@@ -2,6 +2,8 @@
 """
 from __future__ import annotations
 
+from aizynthfinder.utils.logging import logger
+
 import os
 from typing import TYPE_CHECKING
 
@@ -59,6 +61,8 @@ class MctsState:
         inchis.sort()
         self._hash = hash(tuple(inchis))
         self.cofactors = cofactors
+        self.logger = logger()
+        self.config = config
 
     def __hash__(self) -> int:
         return self._hash
@@ -164,7 +168,9 @@ class MctsState:
 
         # NB weights should sum to 1, to ensure that all
         score4 = 0.95 * fraction_in_stock + 0.05 * max_transforms_score
-        return float(score4)
+        cofactor_score = - float(self.config.state_cofactor_weigth) * np.sum(np.abs(self.cofactors))
+        #self.logger.info(f"\n LOG_COFAC: {self.cofactors} \n")
+        return float(score4) + cofactor_score
 
     @staticmethod
     def _squash_function(
