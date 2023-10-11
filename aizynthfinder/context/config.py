@@ -51,6 +51,7 @@ class Configuration:  # pylint: disable=R0902
     max_transforms: int = 6
     default_prior: float = 0.5
     use_prior: bool = True
+    exploration_scaler: float = 1.0
     iteration_limit: int = 100
     return_first: bool = False
     time_limit: int = 120

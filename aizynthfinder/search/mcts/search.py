@@ -42,6 +42,7 @@ class MctsSearchTree:
             self.root = None
         self.config = config
         self._graph: Optional[nx.DiGraph] = None
+        self.debugfile = open("debug.txt","w")
 
     @classmethod
     def from_json(cls, filename: str, config: Configuration) -> "MctsSearchTree":
@@ -116,10 +117,14 @@ class MctsSearchTree:
 
         :return: if a solution was found
         """
+        self.debugfile.write(("-"*50)+"\n")
+        self.debugfile.flush()
+        
         self.profiling["iterations"] += 1
         leaf = self.select_leaf()
         leaf.expand()
         rollout_child = None
+        self.debugfile.write("START OF ROLLOUT:"+str(leaf._state.is_solved)+"\t"+str(leaf.is_terminal())+"\n")
         while not leaf.is_terminal():
             child = leaf.promising_child()
             if not rollout_child:

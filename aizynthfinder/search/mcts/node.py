@@ -280,8 +280,21 @@ class MctsNode:
         :return: the child
         """
 
+        self.tree.debugfile.write("Promising on: " +"\t"+ str(self.__hash__()) +
+                                  "\t"+ str(self.state._hash)+
+                                  "\t"+str(self.is_terminal())+
+                                  "\t"+str(self.is_expandable)+
+                                  "\t"+str(self._state.max_transforms)+
+                                  "\t"+str(self.is_expanded)+
+                                  "\tSolved:"+str(self.is_solved)+
+                                  "\n")
+        
+        
         def _score_and_select():
-            scores = self._children_q() + self._children_u()
+            qs = self._children_q()
+            us = self._children_u()*self._config.exploration_scaler
+            self.tree.debugfile.write("Scores: \t"+str(qs)+"\t"+str(us)+"\n")
+            scores = qs+us
             indices = np.where(scores == scores.max())[0]
             index = np.random.choice(indices)
 
@@ -370,6 +383,7 @@ class MctsNode:
                     state=state, owner=self.tree, config=self._config, parent=self
                 )
                 new_nodes.append(self._children[child_idx])
+        self.tree.debugfile.write("New nodes added:\t"+str(len(new_nodes))+"\n")
         return new_nodes
 
     def _expand_children_lists(self, old_index: int, action_index: int) -> int:
@@ -440,7 +454,17 @@ class MctsNode:
             for reactants in reaction.reactants
         ]
         new_nodes = self._create_children_nodes(new_states, child_idx)
-
+        
         if new_nodes:
-            return random.choice(new_nodes)
+            result = random.choice(new_nodes)
+            self.tree.debugfile.write("Selected child: " +"\t"+ str(result.__hash__()) +
+                            "\t"+ str(result.state._hash)+
+                            "\t"+str(result.is_terminal())+
+                            "\t"+str(result.is_expandable)+
+                            "\t"+str(result._state.max_transforms)+
+                            "\t"+str(result.is_expanded)+
+                            "\tSolved:"+str(result.is_solved)+
+                            "\n")
+            return result
+        self.tree.debugfile.write("Selected child: None"+"\n")
         return None
